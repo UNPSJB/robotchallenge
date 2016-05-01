@@ -6,7 +6,7 @@ except ImportError:
     from utils import encontrar_kivy
     encontrar_kivy()
 
-
+from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.app import App
 from kivy.uix.label import Label
 # from kivy.uix.widget import Widget
@@ -16,6 +16,7 @@ from kivy.clock import Clock
 from kivy.properties import NumericProperty
 from kivy.animation import Animation
 from kivy.core.window import Window
+from kivy.factory import Factory
 
 # Configuración de fullscreen
 # No funcioan bien en OS X
@@ -34,13 +35,16 @@ except:
 
 
 class LightLabel(Label):
+    """
+    Luz verde
+    """
     red   = NumericProperty(0)
     green = NumericProperty(.9)
     blue  = NumericProperty(0)
     alpha = NumericProperty(0)
 
 
-class LightBox(BoxLayout):
+class SemaforoSumo(Screen):
     '''
     Intenta emular a https://www.youtube.com/watch?v=L9SEuYpGrjg
     '''
@@ -83,8 +87,7 @@ class LightBox(BoxLayout):
 
 class TorneoApp(App):
     """Aplicacion de light app"""
-    def build(self):
-        return LightBox()
+
 
 if __name__ == '__main__':
     app = TorneoApp()

@@ -1,33 +1,67 @@
-<LightBox>:
-  # BoxLayout
-  size: root.size
-  orientation: "vertical"
-  id: light_box
+Principal
 
-  # Estilo
-  canvas.before:
-    Color:
-      rgb: .6, .6, .6
-    Rectangle:
-      pos: self.pos
-      size: root.size
-      source: "data/back.png"
+<Principal@ScreenManager>:
+  MenuScreen:
+    name: 'menu'
+  SemaforoSumo:
+    name: 'sumo'
 
-  Label:
-    size_hint: (1, 0.1)
-    text: "5"
-    font_size: 20
+
+<MenuScreen@Screen>:
   BoxLayout:
-    orientation: 'horizontal'
-    padding_bottom: 50
-    LightLabel:
-      id: led1
-    LightLabel:
-      id: led2
-    LightLabel:
-      id: led3
-  Buttons:
-    id: buttons
+    orientation: 'vertical'
+    canvas.before:
+      Color:
+        rgb: .6, .6, .6
+      Rectangle:
+        pos: self.pos
+        size: root.size
+        source: "data/back.png"
+
+    Label:
+      text: "Competencia de Robótica"
+      font_size: 32
+    BoxLayout:
+      size_hint: (1, .1)
+      spacing: 10
+      padding: 10
+      Button:
+        text: "Sumo"
+        on_press: app.root.current = 'sumo'
+      Button:
+        text: "Seguidor de Línea"
+
+
+<SemaforoSumo@Screen>:
+  BoxLayout:
+    size: root.size
+    orientation: "vertical"
+    id: light_box
+
+    # Estilo
+    canvas.before:
+      Color:
+        rgb: .6, .6, .6
+      Rectangle:
+        pos: self.pos
+        size: root.size
+        source: "data/back.png"
+
+    Label:
+      size_hint: (1, 0.1)
+      text: "Semáforo SUMO"
+      font_size: 32
+    BoxLayout:
+      orientation: 'horizontal'
+      padding_bottom: 50
+      LightLabel:
+        id: led1
+      LightLabel:
+        id: led2
+      LightLabel:
+        id: led3
+    Buttons:
+      id: buttons
 
 
 <LightLabel@Label>:
@@ -53,3 +87,10 @@
     # Arrancar el timer
     #on_press: self.parent.start()
     on_press: print(self.parent.parent)
+  Button:
+    id: cancelar
+    size_hint: (.1, 1)
+    canvas:
+      Rectangle:
+        source: "data/cancel.png"
+
