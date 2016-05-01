@@ -87,5 +87,5 @@ class TorneoApp(App):
         return LightBox()
 
 if __name__ == '__main__':
-    app = LightApp()
+    app = TorneoApp()
     app.run()
