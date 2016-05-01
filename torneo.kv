@@ -5,6 +5,8 @@ Principal
     name: 'menu'
   SemaforoSumo:
     name: 'sumo'
+  FixtureScreen:
+    name: 'fixture'
 
 
 <MenuScreen@Screen>:
@@ -30,6 +32,7 @@ Principal
         on_press: app.root.current = 'sumo'
       Button:
         text: "Seguidor de Línea"
+        on_press: app.root.current = 'fixture'
 
 
 <SemaforoSumo@Screen>:
@@ -92,7 +95,9 @@ Principal
         #on_press: print(self.parent.parent)
       Button:
         id: cancelar
-        size_hint: (.2, 1)
+        #size_hint: (.2, 1)
+        text: "Volver"
+        on_press: app.root.current = 'menu'
         Image:
           source: "data/cancel.png"
           y: self.parent.y + self.parent.height - 200
@@ -102,9 +107,34 @@ Principal
 
 
 <LightLabel@Label>:
-  canvas.before:
+  canvas:
     Color:
       rgba: self.red, self.green, self.blue, self.alpha
     Ellipse:
       size: min(self.size), min(self.size)
       pos: self.pos
+    # TODO: Make this work
+    # Rectangle:
+    #   source: 'data/light.png'
+    #   pos: self.pos
+    #   size: min(self.size) * .8, min(self.size) * .8
+
+
+<FixtureScreen@Screen>:
+  BoxLayout:
+    orientation: 'vertical'
+    canvas:
+      Color:
+        rgb: .6, .6, .6
+      Rectangle:
+        pos: self.pos
+        size: root.size
+        source: "data/back.png"
+    GridLayout:
+      id: grid
+      cols: 1
+    BoxLayout:
+      orientation: 'horizontal'
+      Button:
+        text: "Volver"
+        on_press: app.root.current = 'menu'
