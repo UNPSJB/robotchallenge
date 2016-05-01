@@ -1,0 +1,52 @@
+<TimerLabel>:
+  size_hint: (1, .8)
+  #text: "XX:XX:xxx"
+  font_size: 220
+  markup: True
+
+
+<Light>:
+    canvas.before:
+      Color:
+          rgba: 1, 0, 0, 0.3
+      Ellipse:
+          size: self.size
+
+#<SemaphoreWidget>:
+<Lights>:
+  BoxLayout:
+    orientation: 'horizontal'
+    Light:
+      id: first
+    Light:
+      id: second
+    Light:
+      id: third
+
+
+<Timer>:
+  BoxLayout:
+    size: root.size
+    orientation: 'vertical'
+    canvas.before:
+      Color:
+        rgba: .1, .1, .25, 1
+      Rectangle:
+        # self here refers to the widget i.e FloatLayout
+        pos: self.pos
+        size: self.size
+
+    Lights
+    
+    TimerLabel:
+      id: timer_label
+    BoxLayout:
+      size_hint: (1, .2)
+      spacing: 20
+      padding: 20
+      Button:
+        text: "Start"
+        on_press: app.root.ids.timer_label.start()
+
+      Button:
+        text: "Stop"
