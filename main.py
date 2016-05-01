@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 import sys
+from time import time
+
 try:
     import kivy
 except ImportError:
     from utils import encontrar_kivy
     encontrar_kivy()
+
 
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.app import App
@@ -16,7 +19,7 @@ from kivy.clock import Clock
 from kivy.properties import NumericProperty
 from kivy.animation import Animation
 from kivy.core.window import Window
-from kivy.factory import Factory
+# from kivy.factory import Factory
 
 # Configuración de fullscreen
 # No funcioan bien en OS X
@@ -46,44 +49,73 @@ class LightLabel(Label):
 
 class SemaforoSumo(Screen):
     '''
+    Este widget es una pantalla, por lo que es el root para el cálculo
+    de los IDs
     Intenta emular a https://www.youtube.com/watch?v=L9SEuYpGrjg
     '''
 
     counter = 0
+    mins = NumericProperty(3)
+    countdown = 0
 
     def start(self):
         self.counter = 0
-
         Clock.schedule_interval(self.tick, 1)
-        self.ids.buttons.ids.start_button.disabled = True
+        self.ids.start_button.disabled = True
+        self.ids.stop_button.disabled = False
         # Arreglo disperso de leds
         # {1: Led1, 2: Led2, 3: Led3}
         self.leds = {i: getattr(self.ids, 'led%d' % i, None) for i in range(1, 4)}
 
+    # Countdown
+    CONTADOR_INICIAL = 4
+    CONTADOR_APAGADO = 4 + 5
+    CONTADOR_FLASH = 4 + 5 + 1
+    ANIMATION_DELAY = 0.3
+    #
+    # CONTADOR_INICIAL = 1
+    # CONTADOR_APAGADO = 2
+    # CONTADOR_FLASH = 3
+    # ANIMATION_DELAY = 0.3
+
     def tick(self, elapsed):
         self.counter += 1
 
-        if self.counter < 4:
+        if self.counter < self.CONTADOR_INICIAL:
             # Iluminación progresiva de los leds
-            anim = Animation(alpha=0.8, duration=0.3)
+            anim = Animation(alpha=0.8, duration=self.ANIMATION_DELAY)
             anim.start(self.leds[self.counter])  # 1, 2, 3
             if light_1_sound:
                 light_1_sound.play()
-        elif self.counter == 4:
+        elif self.counter == self.CONTADOR_INICIAL:
             for n, led in self.leds.items():
-                anim = Animation(alpha=0, duration=0.3)
+                anim = Animation(alpha=0, duration=self.ANIMATION_DELAY)
                 anim.start(led)
         # 5 segundos apagado
-        elif self.counter == (4+5):
+        elif self.counter == self.CONTADOR_APAGADO:
             for n, led in self.leds.items():
-                anim = Animation(alpha=1, duration=0.2) + Animation(alpha=0, duration=0.5)
+                anim = Animation(
+                    alpha=1, duration=self.ANIMATION_DELAY * .5
+                ) + Animation(
+                    alpha=0, duration=self.ANIMATION_DELAY * 2
+                )
                 anim.start(led)
                 if light_2_sound:
                     light_2_sound.play()
-        elif self.counter == (4+5+1):
+        elif self.counter == self.CONTADOR_FLASH:
             Clock.unschedule(self.tick)
-            self.ids.buttons.ids.start_button.disabled = False
+            self.ids.start_button.disabled = False
+            self.ids.sem_screen_mgr.current = 'contador'
 
+            self.countdown = time() + (self.mins * 60)
+            self.counter += elapsed
+            mins, secs = divmod(self.countdown, 60)
+            self.ids.coundown_label.text = '3:00.000'
+            Clock.schedule_interval(self.tick, 0.01)
+        else: # self.counter >= self.CONTADOR_FLASH:
+            remaining = self.countdown - time()
+            mins, secs = divmod(remaining, 60)
+            self.ids.coundown_label.text = '%d:%2.3f' % (mins, secs)
 
 class TorneoApp(App):
     """Aplicacion de light app"""

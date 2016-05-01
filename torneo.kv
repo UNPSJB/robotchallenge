@@ -33,6 +33,7 @@ Principal
 
 
 <SemaforoSumo@Screen>:
+  id: semaforo
   BoxLayout:
     size: root.size
     orientation: "vertical"
@@ -49,15 +50,28 @@ Principal
       size_hint: (1, 0.1)
       text: "Semáforo SUMO"
       font_size: 32
-    BoxLayout:
-      orientation: 'horizontal'
-      padding_bottom: 50
-      LightLabel:
-        id: led1
-      LightLabel:
-        id: led2
-      LightLabel:
-        id: led3
+    ScreenManager:
+      id: sem_screen_mgr
+      Screen:
+        name: 'semaforo'
+        BoxLayout:
+          orientation: 'horizontal'
+          padding_bottom: 50
+          LightLabel:
+            id: led1
+          LightLabel:
+            id: led2
+          LightLabel:
+            id: led3
+      Screen:
+        name: 'contador'
+        Label:
+          id: coundown_label
+          text: "xx:xx:xx"
+          font_size: 192
+          markup: True
+
+
     BoxLayout:
       size_hint: (1, .2)
       spacing: 20
@@ -66,9 +80,9 @@ Principal
         id: start_button
         text: "Start"
         #on_press: from pdb import set_trace; set_trace()
-        on_press: root.ids.semaforo_sumo.start()
+        on_press: root.start()
       Button:
-        id: exit_button
+        id: stop_button
         text: "Stop"
         disabled: True
         # Arrancar el timer
