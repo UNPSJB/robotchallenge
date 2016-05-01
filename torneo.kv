@@ -1,52 +1,55 @@
-<TimerLabel>:
-  size_hint: (1, .8)
-  #text: "XX:XX:xxx"
-  font_size: 220
-  markup: True
+<LightBox>:
+  # BoxLayout
+  size: root.size
+  orientation: "vertical"
+  id: light_box
 
+  # Estilo
+  canvas.before:
+    Color:
+      rgb: .6, .6, .6
+    Rectangle:
+      pos: self.pos
+      size: root.size
+      source: "data/back.png"
 
-<Light>:
-    canvas.before:
-      Color:
-          rgba: 1, 0, 0, 0.3
-      Ellipse:
-          size: self.size
-
-#<SemaphoreWidget>:
-<Lights>:
+  Label:
+    size_hint: (1, 0.1)
+    text: "5"
+    font_size: 20
   BoxLayout:
     orientation: 'horizontal'
-    Light:
-      id: first
-    Light:
-      id: second
-    Light:
-      id: third
+    padding_bottom: 50
+    LightLabel:
+      id: led1
+    LightLabel:
+      id: led2
+    LightLabel:
+      id: led3
+  Buttons:
+    id: buttons
 
 
-<Timer>:
-  BoxLayout:
-    size: root.size
-    orientation: 'vertical'
-    canvas.before:
-      Color:
-        rgba: .1, .1, .25, 1
-      Rectangle:
-        # self here refers to the widget i.e FloatLayout
-        pos: self.pos
-        size: self.size
+<LightLabel@Label>:
+  canvas.before:
+    Color:
+      rgba: self.red, self.green, self.blue, self.alpha
+    Ellipse:
+      size: min(self.size), min(self.size)
+      pos: self.pos
 
-    Lights
-    
-    TimerLabel:
-      id: timer_label
-    BoxLayout:
-      size_hint: (1, .2)
-      spacing: 20
-      padding: 20
-      Button:
-        text: "Start"
-        on_press: app.root.ids.timer_label.start()
-
-      Button:
-        text: "Stop"
+<Buttons@BoxLayout>:
+  size_hint: (1, .2)
+  spacing: 20
+  padding: 20
+  Button:
+    id: start_button
+    text: "Start"
+    on_press: root.parent.start()
+  Button:
+    id: exit_button
+    text: "Stop"
+    disabled: True
+    # Arrancar el timer
+    #on_press: self.parent.start()
+    on_press: print(self.parent.parent)
