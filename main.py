@@ -115,10 +115,27 @@ class SemaforoSumo(Screen):
         else: # self.counter >= self.CONTADOR_FLASH:
             remaining = self.countdown - time()
             mins, secs = divmod(remaining, 60)
-            self.ids.coundown_label.text = '%d:%2.3f' % (mins, secs)
+            self.ids.coundown_label.text = '%d:%-2.3f' % (mins, secs)
 
 class TorneoApp(App):
     """Aplicacion de light app"""
+    def __init__(self):
+        super(TorneoApp, self).__init__()
+        self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
+        self._keyboard.bind(on_key_down=self._on_keyboard_down)
+
+    def _keyboard_closed(self):
+        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+        self._keyboard = None
+
+    def _on_keyboard_down(self, keyboard, code_str, hex, others):
+        code, key = code_str
+        if key == 'f' and 'ctrl' in others:
+            print "*" * 10
+            Window.toggle_fullscreen()
+
+        if key == 'q' and not others:
+            sys.exit(1)
 
 
 if __name__ == '__main__':
