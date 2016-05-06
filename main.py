@@ -4,6 +4,7 @@
 import os
 import sys
 from time import time
+from functools import partial
 
 try:
     import kivy
@@ -59,7 +60,7 @@ class SemaforoSumo(Screen):
     '''
 
     counter = 0
-    mins = NumericProperty(3)
+    mins = NumericProperty(.1)
     countdown = 0
     STATE_INITIAL_COUNTER = 0
     STATE_PRECOUNTDOWN = 1
@@ -78,6 +79,7 @@ class SemaforoSumo(Screen):
         CONTADOR_APAGADO = 2
         CONTADOR_FLASH = 3
         ANIMATION_DELAY = 0.3
+
     def start(self):
         self.counter = 0
         Clock.schedule_interval(self.tick, 1)
@@ -86,6 +88,7 @@ class SemaforoSumo(Screen):
         # {1: Led1, 2: Led2, 3: Led3}
         self.leds = {i: getattr(self.ids, 'led%d' % i, None) for i in range(1, 4)}
         self.state = self.STATE_PRECOUNTDOWN
+
 
     def tick(self, elapsed):
         self.counter += 1
@@ -121,16 +124,24 @@ class SemaforoSumo(Screen):
             self.countdown = time() + (self.mins * 60)
             self.counter += elapsed
             mins, secs = divmod(self.countdown, 60)
-            self.ids.coundown_label.text = '3:00.000'
+            self.ids.coundown_label.text = '%d:00.000' % self.mins
             Clock.schedule_interval(self.tick, 0.01)
             self.state = self.STATE_COUNTDOWN
         elif self.STATE_COUNTDOWN:  # self.counter >= self.CONTADOR_FLASH:
             remaining = self.countdown - time()
-            mins, secs = divmod(remaining, 60)
-            self.ids.coundown_label.text = '%d:%-2.3f' % (mins, secs)
+            if remaining <= 0.01:
+                self.ids.coundown_label.text = '0:00.000'
+                Clock.unschedule(self.tick)
+                self.ids.start_button.disabled = False
+                self.counter = 0
+                def volver(*args):
+                    self.ids.sem_screen_mgr.current = 'semaforo'
+                Clock.schedule_once(volver, 1)
+            else:
+                mins, secs = divmod(remaining, 60)
+                self.ids.coundown_label.text = '%d:%-2.3f' % (mins, secs)
         else:
             Logger.info("State is %s", self.state)
-
 
     def spacebar_pressed(self):
         if self.STATE_COUNTDOWN:
