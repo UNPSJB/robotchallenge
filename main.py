@@ -60,7 +60,7 @@ class SemaforoSumo(Screen):
     '''
 
     counter = 0
-    mins = NumericProperty(.1)
+    mins = NumericProperty(.1 if DEBUG else 3)
     countdown = 0
     STATE_INITIAL_COUNTER = 0
     STATE_PRECOUNTDOWN = 1
@@ -88,11 +88,12 @@ class SemaforoSumo(Screen):
         # {1: Led1, 2: Led2, 3: Led3}
         self.leds = {i: getattr(self.ids, 'led%d' % i, None) for i in range(1, 4)}
         self.state = self.STATE_PRECOUNTDOWN
+        self.pasued = False
 
 
     def tick(self, elapsed):
         self.counter += 1
-
+        print self.tick
         if self.counter < self.CONTADOR_INICIAL:
 
             # self.counter < self.CONTADOR_INICIAL:
@@ -127,16 +128,10 @@ class SemaforoSumo(Screen):
             self.ids.coundown_label.text = '%d:00.000' % self.mins
             Clock.schedule_interval(self.tick, 0.01)
             self.state = self.STATE_COUNTDOWN
-        elif self.STATE_COUNTDOWN:  # self.counter >= self.CONTADOR_FLASH:
+        elif self.counter > self.CONTADOR_FLASH: #self.STATE_COUNTDOWN:  # self.counter >= self.CONTADOR_FLASH:
             remaining = self.countdown - time()
             if remaining <= 0.01:
-                self.ids.coundown_label.text = '0:00.000'
-                Clock.unschedule(self.tick)
-                self.ids.start_button.disabled = False
-                self.counter = 0
-                def volver(*args):
-                    self.ids.sem_screen_mgr.current = 'semaforo'
-                Clock.schedule_once(volver, 1)
+                self.reset(1)
             else:
                 mins, secs = divmod(remaining, 60)
                 self.ids.coundown_label.text = '%d:%-2.3f' % (mins, secs)
@@ -144,9 +139,23 @@ class SemaforoSumo(Screen):
             Logger.info("State is %s", self.state)
 
     def spacebar_pressed(self):
-        if self.STATE_COUNTDOWN:
-            Clock.unschedule(self.tick)
 
+        if self.counter > self.CONTADOR_FLASH:
+            if self.paused:
+                Clock.unschedule(self.tick)
+                self.paused = True
+            else:
+                self.reset(0)
+
+    def reset(self, lapse):
+
+        self.ids.coundown_label.text = '0:00.000'
+        Clock.unschedule(self.tick)
+        self.ids.start_button.disabled = False
+        self.counter = 0
+        def volver(*args):
+            self.ids.sem_screen_mgr.current = 'semaforo'
+        Clock.schedule_once(volver, lapse)
 
 
 class SemaforoApp(App):
