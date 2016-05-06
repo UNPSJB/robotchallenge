@@ -88,12 +88,12 @@ class SemaforoSumo(Screen):
         # {1: Led1, 2: Led2, 3: Led3}
         self.leds = {i: getattr(self.ids, 'led%d' % i, None) for i in range(1, 4)}
         self.state = self.STATE_PRECOUNTDOWN
-        self.pasued = False
+        self.paused = False
 
 
     def tick(self, elapsed):
         self.counter += 1
-        print self.tick
+
         if self.counter < self.CONTADOR_INICIAL:
 
             # self.counter < self.CONTADOR_INICIAL:
@@ -139,9 +139,8 @@ class SemaforoSumo(Screen):
             Logger.info("State is %s", self.state)
 
     def spacebar_pressed(self):
-
         if self.counter > self.CONTADOR_FLASH:
-            if self.paused:
+            if not self.paused:
                 Clock.unschedule(self.tick)
                 self.paused = True
             else:
