@@ -51,7 +51,6 @@ class LightLabel(Label):
     alpha = NumericProperty(0)
 
 
-
 class SemaforoSumo(Screen):
     '''
     Este widget es una pantalla, por lo que es el root para el cálculo
@@ -62,15 +61,11 @@ class SemaforoSumo(Screen):
     counter = 0
     mins = NumericProperty(3)
     countdown = 0
+    STATE_INITIAL_COUNTER = 0
+    STATE_PRECOUNTDOWN = 1
+    STATE_COUNTDOWN = 2
+    STATE_PAUSED = 3
 
-    def start(self):
-        self.counter = 0
-        Clock.schedule_interval(self.tick, 1)
-        self.ids.start_button.disabled = True
-        self.ids.stop_button.disabled = False
-        # Arreglo disperso de leds
-        # {1: Led1, 2: Led2, 3: Led3}
-        self.leds = {i: getattr(self.ids, 'led%d' % i, None) for i in range(1, 4)}
 
     # Countdown
     if not DEBUG:
@@ -83,11 +78,21 @@ class SemaforoSumo(Screen):
         CONTADOR_APAGADO = 2
         CONTADOR_FLASH = 3
         ANIMATION_DELAY = 0.3
+    def start(self):
+        self.counter = 0
+        Clock.schedule_interval(self.tick, 1)
+        self.ids.start_button.disabled = True
+        # Arreglo disperso de leds
+        # {1: Led1, 2: Led2, 3: Led3}
+        self.leds = {i: getattr(self.ids, 'led%d' % i, None) for i in range(1, 4)}
+        self.state = self.STATE_PRECOUNTDOWN
 
     def tick(self, elapsed):
         self.counter += 1
 
         if self.counter < self.CONTADOR_INICIAL:
+
+            # self.counter < self.CONTADOR_INICIAL:
             # Iluminación progresiva de los leds
             anim = Animation(alpha=0.8, duration=self.ANIMATION_DELAY)
             anim.start(self.leds[self.counter])  # 1, 2, 3
@@ -110,7 +115,7 @@ class SemaforoSumo(Screen):
                     light_2_sound.play()
         elif self.counter == self.CONTADOR_FLASH:
             Clock.unschedule(self.tick)
-            self.ids.start_button.disabled = False
+            # self.ids.start_button.disabled = False
             self.ids.sem_screen_mgr.current = 'contador'
 
             self.countdown = time() + (self.mins * 60)
@@ -118,10 +123,19 @@ class SemaforoSumo(Screen):
             mins, secs = divmod(self.countdown, 60)
             self.ids.coundown_label.text = '3:00.000'
             Clock.schedule_interval(self.tick, 0.01)
-        else:  # self.counter >= self.CONTADOR_FLASH:
+            self.state = self.STATE_COUNTDOWN
+        elif self.STATE_COUNTDOWN:  # self.counter >= self.CONTADOR_FLASH:
             remaining = self.countdown - time()
             mins, secs = divmod(remaining, 60)
             self.ids.coundown_label.text = '%d:%-2.3f' % (mins, secs)
+        else:
+            Logger.info("State is %s", self.state)
+
+
+    def spacebar_pressed(self):
+        if self.STATE_COUNTDOWN:
+            Clock.unschedule(self.tick)
+
 
 
 class SemaforoApp(App):
@@ -138,9 +152,15 @@ class SemaforoApp(App):
 
     def _on_keyboard_down(self, keyboard, code_str, hex, others):
         code, key = code_str
+
         if key == 'f' and 'ctrl' in others:
             print "*" * 10
             Window.toggle_fullscreen()
+        elif key == 'spacebar':
+            try:
+                self.root.current_screen.spacebar_pressed()
+            except Exception:
+                Logger.info("Not in screen")
 
         if key == 'q' and not others:
             sys.exit(1)

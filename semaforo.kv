@@ -28,11 +28,11 @@ Principal
       spacing: 10
       padding: 10
       Button:
-        text: "Sumo"
+        text: "Semáforo"
         on_press: app.root.current = 'sumo'
-      Button:
-        text: "Seguidor de Línea"
-        on_press: app.root.current = 'fixture'
+      # Button:
+      #   text: "Seguidor de Línea"
+      #   on_press: app.root.current = 'fixture'
 
 
 <SemaforoSumo@Screen>:
@@ -86,23 +86,23 @@ Principal
         text: "Start"
         #on_press: from pdb import set_trace; set_trace()
         on_press: root.start()
-      Button:
-        id: stop_button
-        text: "Stop"
-        disabled: True
-        # Arrancar el timer
-        on_press: from pdb import set_trace; set_trace()
-        #on_press: print(self.parent.parent)
-      Button:
-        id: cancelar
-        #size_hint: (.2, 1)
-        text: "Volver"
-        on_press: app.root.current = 'menu'
-        Image:
-          source: "data/cancel.png"
-          y: self.parent.y + self.parent.height - 200
-          x: self.parent.x
-          size: min(self.size), min(self.size)
+      # Button:
+      #   id: stop_button
+      #   text: "  Stop\n(space)"
+      #   disabled: True
+      #   # Arrancar el timer
+      #   on_press: from pdb import set_trace; set_trace()
+      #   #on_press: print(self.parent.parent)
+      # Button:
+      #   id: cancelar
+      #   #size_hint: (.2, 1)
+      #   text: "Volver"
+      #   on_press: app.root.current = 'menu'
+      #   Image:
+      #     source: "data/cancel.png"
+      #     y: self.parent.y + self.parent.height - 200
+      #     x: self.parent.x
+      #     size: min(self.size), min(self.size)
 
 
 
@@ -127,7 +127,7 @@ Principal
       Color:
         rgb: .6, .6, .6
       Rectangle:
-        pos: self.pos
+        pos: self.pos[0] + 100, self.pos[1] + 100
         size: root.size
         source: "data/back.png"
     GridLayout:
