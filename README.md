@@ -6,6 +6,10 @@
 ## Ejecución desde Kivy Launcher
 
 
-# SUMO
+# Utilizando la aplicación Kivy Launcher
+
+Kivy Launcher permite ejecutar proyectos Kivy sin necesidad de generar el APK.
+Se descarga desde: https://play.google.com/store/apps/details?id=org.kivy.pygame&hl=es
+
 
 ![SUMO](./doc/launcher.jpg)
