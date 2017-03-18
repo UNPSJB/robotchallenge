@@ -25,6 +25,8 @@ BROWSER := python -c "$$BROWSER_PYSCRIPT"
 
 
 define PYTHON_SELECTOR
+# Busca el binario de python que tenga Kivy, primero el del sistema
+# Y luego un virtualenv que se llame kivy
 import sys
 import os
 
@@ -32,16 +34,18 @@ try:
 	import kivy
 	print(sys.executable)
 except ImportError:
-	print("~/.virtualenvs/kivy/bin/python")
-
+	venv_path = os.path.expanduser("~/.virtualenvs/kivy/bin/python")
+	print(venv_path)
 endef
 export PYTHON_SELECTOR
-PYTHON := $(shell python -c "$$PYTHON_SELECTOR")
+PYTHON_BIN := $$(python -c "$$PYTHON_SELECTOR")
 
 help:	## Imprime ayuda
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
+
 debug:
-	echo $(PYTHON)
+	echo $(PYTHON_BIN)
+	$(PYTHON_BIN)
 run:	## Ejecuta localmente el proyecto
 	@python -c "import kivy" 2>/dev/null && \
 		pythonc src/main.py || \ &&
