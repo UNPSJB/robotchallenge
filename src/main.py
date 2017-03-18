@@ -6,13 +6,6 @@ import sys
 from time import time
 from functools import partial
 
-try:
-    import kivy
-except ImportError:
-    from utils import encontrar_kivy
-    encontrar_kivy()
-
-
 from kivy.uix.screenmanager import Screen
 from kivy.app import App
 from kivy.uix.label import Label
@@ -173,7 +166,7 @@ class SemaforoApp(App):
         code, key = code_str
 
         if key == 'f' and 'ctrl' in others:
-            print "*" * 10
+            print("*" * 10)
             Window.toggle_fullscreen()
         elif key == 'spacebar':
             try:

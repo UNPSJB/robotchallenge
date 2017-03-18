@@ -1,0 +1,4 @@
+title=Semaforo Sumo
+author=Meetup Patagónico de Python
+orientation=landscape
+
